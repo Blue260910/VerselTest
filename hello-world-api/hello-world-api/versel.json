@@ -1,0 +1,14 @@
+{
+    "version": 2,
+    "env": {
+      "DB_USER": "RM99667",
+      "DB_PASSWORD": "260903",
+      "DB_CONNECTION_STRING": "oracle.fiap.com.br:1521/ORCL"
+    },
+    "builds": [
+      {
+        "src": "next.config.js",
+        "use": "@vercel/next"
+      }
+    ]
+  }
