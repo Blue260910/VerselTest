@@ -9,24 +9,31 @@ const config = {
 
 // SQL statement a ser executado
 const sql = `
-INSERT INTO RM99210.DASH_PONTUACAO (
-  TEMPO,
-  NOME
-) VALUES (
-  INTERVAL '0 00:00:00.000' DAY TO SECOND + NUMTODSINTERVAL(:minutos, 'MINUTE') + NUMTODSINTERVAL(:segundos, 'SECOND') + NUMTODSINTERVAL(:milissegundos / 1000, 'SECOND'),
-  :nome
+INSERT INTO USER_DATA (
+  NOME, 
+  DATA_INSERCAO, 
+  PONTUACAO
+) 
+VALUES (
+  :nome, 
+  DEFAULT, 
+  :tempopontuacao
 )
 `;
 
 async function inserir(nome, minutos, segundos, milissegundos) {
   let connection;
 
+  // Formatar a string tempopontuacao no formato 00:00:00
+  const pad = (num) => String(num).padStart(2, '0');
+  const tempopontuacao = `${pad(minutos)}:${pad(segundos)}:${pad(milissegundos)}`;
+
   try {
     // Obter uma conexão standalone
     connection = await oracledb.getConnection(config);
 
     // Execução do SQL
-    const result = await connection.execute(sql, { nome, minutos, segundos, milissegundos }, { autoCommit: true });
+    const result = await connection.execute(sql, { nome, tempopontuacao }, { autoCommit: true });
     console.log('Rows inserted:', result.rowsAffected);
     return { success: true, rowsAffected: result.rowsAffected };
   } catch (err) {
