@@ -1,5 +1,14 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
+import Rating from "react-rating-stars-component"; // Importação do componente Rating
+import Styled from "styled-components";
+
+const ContainerDeAvaliacao = Styled.div`
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.70);
+  padding: 24px;
+`;
+
 export default function Home() {
   const [formData, setFormData] = useState({
     telefone: "",
@@ -9,6 +18,7 @@ export default function Home() {
 
   const [searchResult, setSearchResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showInviteMessage, setShowInviteMessage] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +38,7 @@ export default function Home() {
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setShowInviteMessage(false);
 
     try {
       const response = await fetch(`/api/buscarPorTelefone?telefone=${formData.telefone}`);
@@ -36,7 +47,7 @@ export default function Home() {
         setSearchResult(data);
       } else {
         setSearchResult(null);
-        alert(data.message);
+        setShowInviteMessage(true);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -80,37 +91,48 @@ export default function Home() {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container pt-3" style={{ background: "#F3F4F8" }}>
       <h1 className="text-center">Enviar Feedback</h1>
 
-      <form onSubmit={handleSearchSubmit} className="mb-5">
-        <div className="mb-3">
-          <label htmlFor="telefone" className="form-label">
-            Número de Telefone
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="telefone"
-            name="telefone"
-            value={formData.telefone}
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit" className="btn btn-primary w-100">
-          Buscar
-        </button>
-      </form>
 
-      {loading && (
-        <div className="text-center">
-          <h2>Carregando dados...</h2>
-        </div>
+      {!searchResult && (
+        <form onSubmit={handleSearchSubmit} className="mb-5 mt-3">
+          <div className="mb-3">
+            <label htmlFor="telefone" className="form-label">
+              Telefone utilizado no cadastro:
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="telefone"
+              name="telefone"
+              value={formData.telefone}
+              onChange={handleChange}
+            />
+          </div>
+          {showInviteMessage && (
+          <div className="alert alert-info text-center" role="alert">
+            Telefone não encontrado. <br /> Venha participar de nossa experiencia para deixar uma avaliação.
+          </div>
+        )}
+          <button type="submit" className="btn btn-primary w-100">
+            Buscar
+          </button>
+        </form>
       )}
 
+        {loading && (
+          <div className="text-center">
+            <h2>Carregando dados...</h2>
+          </div>
+        )}
+      
+
+
+
       {searchResult && (
-        <div>
-          <h2 className="text-center">Dados Encontrados</h2>
+        <ContainerDeAvaliacao>
+          <h2 className="text-center">Seus dados</h2>
           <div className="table-responsive">
             <table className="table table-striped table-bordered table-sm mt-3 d-none d-md-table">
               <thead className="thead-dark">
@@ -138,11 +160,11 @@ export default function Home() {
             </div>
           </div>
 
-          <h2 className="text-center mt-5">Enviar Feedback</h2>
+          <h2 className="text-center mt-5">Deixe a sua opinião</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="feedback" className="form-label">
-                Feedback
+                Conte-nos o que achou:
               </label>
               <textarea
                 className="form-control"
@@ -150,10 +172,11 @@ export default function Home() {
                 name="feedback"
                 value={formData.feedback}
                 onChange={handleChange}
+                placeholder="Achei a experiência incrível porque..."
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Rating</label>
+              <label className="form-label">O quanto você gostou da experiencia ?</label>
               <Rating
                 count={5}
                 size={24}
@@ -166,7 +189,7 @@ export default function Home() {
               Enviar Feedback
             </button>
           </form>
-        </div>
+        </ContainerDeAvaliacao>
       )}
     </div>
   );
