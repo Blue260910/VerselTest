@@ -224,7 +224,9 @@ export default function Home() {
                     <th>Telefone</th>
                     <th>Profissão</th>
                     <th>Data de Inserção</th>
-                    <th>Pontuação</th>
+                    <th>Tempo</th>
+                    <th>Pontuacao</th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -238,6 +240,7 @@ export default function Home() {
                       {new Date(recentData.dataInsercao).toLocaleString()}
                     </td>
                     <td>{recentData.pontuacao}</td>
+                    <td>{recentData.pontuacao_ranking}</td>
                   </tr>
                 </tbody>
               </table>
@@ -263,7 +266,10 @@ export default function Home() {
                     {new Date(recentData.dataInsercao).toLocaleString()}
                   </li>
                   <li className="list-group-item">
-                    <strong>Pontuação:</strong> {recentData.pontuacao}
+                    <strong>Tempo:</strong> {recentData.pontuacao}
+                  </li>
+                  <li className="list-group-item">
+                    <strong>Pontuação:</strong> {recentData.pontuacao_ranking}
                   </li>
                 </ul>
               </div>

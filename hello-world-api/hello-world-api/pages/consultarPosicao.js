@@ -1,14 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
 import Styled from "styled-components";
+import Typical from "react-typical";
 
 const ContainerDeAvaliacao = Styled.div`
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.70);
   padding: 24px;
 `;
-
-
 
 export default function TopJogadores() {
   const [topPlayers, setTopPlayers] = useState([]);
@@ -48,7 +47,9 @@ export default function TopJogadores() {
     setShowInviteMessage(false);
 
     try {
-      const response = await fetch(`/api/buscarJogadores?telefone=${formData.telefone}`);
+      const response = await fetch(
+        `/api/buscarJogadores?telefone=${formData.telefone}`
+      );
       const data = await response.json();
       if (data.message === "Posição encontrada") {
         setSearchResult(data);
@@ -65,7 +66,9 @@ export default function TopJogadores() {
 
   return (
     <div className="container pt-3" style={{ background: "#F3F4F8" }}>
-      <h1 className="text-center">Top 3 Melhores Jogadores</h1>
+      <h1 className="text-center">
+        <Typical steps={["Top 3 Jogadores", 1000]} loop={1} wrapper="span" />
+      </h1>
 
       <div className="table-responsive mt-4">
         <table className="table table-striped table-bordered table-sm">
@@ -73,17 +76,20 @@ export default function TopJogadores() {
             <tr>
               <th>Posição</th>
               <th>Nome</th>
+              <th>Tempo</th>
               <th>Pontuação</th>
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(topPlayers) && topPlayers.map((player, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{player[0]}</td>
-                <td>{player[1]}</td>
-              </tr>
-            ))}
+            {Array.isArray(topPlayers) &&
+              topPlayers.map((player, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{player[0]}</td>
+                  <td>{player[1]}</td>
+                  <td>{player[2]}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
@@ -106,7 +112,8 @@ export default function TopJogadores() {
         </div>
         {showInviteMessage && (
           <div className="alert alert-info text-center" role="alert">
-            Telefone não encontrado. <br /> Venha participar de nossa experiência para deixar uma avaliação.
+            Telefone não encontrado. <br /> Venha participar de nossa
+            experiência para deixar uma avaliação.
           </div>
         )}
         <button type="submit" className="btn btn-primary w-100">
@@ -128,6 +135,7 @@ export default function TopJogadores() {
               <thead className="thead-dark">
                 <tr>
                   <th>Nome</th>
+                  <th>Tempo</th>
                   <th>Pontuação</th>
                   <th>Posição</th>
                 </tr>
@@ -136,6 +144,7 @@ export default function TopJogadores() {
                 <tr>
                   <td>{searchResult.nome}</td>
                   <td>{searchResult.pontuacao}</td>
+                  <td>{searchResult.pontuacao_ranking}</td>
                   <td>{searchResult.posicao}</td>
                 </tr>
               </tbody>
@@ -146,7 +155,10 @@ export default function TopJogadores() {
                   <strong>Nome:</strong> {searchResult.nome}
                 </li>
                 <li className="list-group-item">
-                  <strong>Pontuação:</strong> {searchResult.pontuacao}
+                  <strong>Tempo:</strong> {searchResult.pontuacao}
+                </li>
+                <li className="list-group-item">
+                  <strong>Pontuação:</strong> {searchResult.pontuacao_ranking}
                 </li>
                 <li className="list-group-item">
                   <strong>Posição:</strong> {searchResult.posicao}

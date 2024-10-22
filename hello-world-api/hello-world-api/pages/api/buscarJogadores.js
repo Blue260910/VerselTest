@@ -9,50 +9,50 @@ const config = {
 
 // SQL statement para buscar os top 3 jogadores
 const sqlTop3 = `
-SELECT Nome, Pontuacao
+SELECT Nome, Pontuacao, Pontuacao_Ranking
 FROM (
-  SELECT Nome, Pontuacao, 
-         ROW_NUMBER() OVER (PARTITION BY TELEFONE ORDER BY Pontuacao) AS rn
+  SELECT Nome, Pontuacao, Pontuacao_Ranking,
+         ROW_NUMBER() OVER (PARTITION BY TELEFONE ORDER BY Pontuacao DESC) AS rn
   FROM USER_DATA
 )
 WHERE rn = 1
-ORDER BY Pontuacao
+ORDER BY Pontuacao_Ranking DESC
 FETCH FIRST 3 ROWS ONLY
 `;
 
 // SQL statement para buscar a posição de um jogador específico
 const sqlPosicao = `
-SELECT NOME, PONTUACAO, POSICAO
+SELECT NOME, PONTUACAO, PONTUACAO_RANKING, POSICAO
 FROM (
-  SELECT NOME, PONTUACAO, TELEFONE, RANK() OVER (ORDER BY PONTUACAO) AS POSICAO
+  SELECT NOME, PONTUACAO, PONTUACAO_RANKING, TELEFONE, RANK() OVER (ORDER BY PONTUACAO_RANKING DESC) AS POSICAO
   FROM USER_DATA
 )
 WHERE TELEFONE = :telefone
 `;
 
 async function buscarTop3Jogadores() {
-    let connection;
-  
-    try {
-      // Obter uma conexão standalone
-      connection = await oracledb.getConnection(config);
-  
-      // Execução do SQL
-      const result = await connection.execute(sqlTop3);
-      return { success: true, rows: result.rows };
-    } catch (err) {
-      console.error('Error executing query:', err);
-      return { success: false, error: err.message };
-    } finally {
-      if (connection) {
-        try {
-          await connection.close();
-        } catch (err) {
-          console.error('Error closing connection:', err);
-        }
+  let connection;
+
+  try {
+    // Obter uma conexão standalone
+    connection = await oracledb.getConnection(config);
+
+    // Execução do SQL
+    const result = await connection.execute(sqlTop3);
+    return { success: true, rows: result.rows };
+  } catch (err) {
+    console.error('Error executing query:', err);
+    return { success: false, error: err.message };
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error('Error closing connection:', err);
       }
     }
   }
+}
 
 async function buscarPosicaoPorTelefone(telefone) {
   let connection;
@@ -64,8 +64,8 @@ async function buscarPosicaoPorTelefone(telefone) {
     // Execução do SQL
     const result = await connection.execute(sqlPosicao, { telefone });
     if (result.rows.length > 0) {
-      const [nome, pontuacao, posicao] = result.rows[0];
-      return { success: true, nome, pontuacao, posicao };
+      const [nome, pontuacao, pontuacao_ranking, posicao] = result.rows[0];
+      return { success: true, nome, pontuacao, pontuacao_ranking, posicao };
     } else {
       return { success: false, message: 'Nenhum registro encontrado' };
     }
@@ -95,6 +95,7 @@ export default async function handler(req, res) {
         message: 'Posição encontrada',
         nome: result.nome,
         pontuacao: result.pontuacao,
+        pontuacao_ranking: result.pontuacao_ranking,
         posicao: result.posicao
       });
     } else {

@@ -9,7 +9,7 @@ const config = {
 
 // SQL statement para buscar o registro mais recente
 const sql = `
-SELECT *
+SELECT id, nome, idade, telefone, profissao, data_insercao, pontuacao, pontuacao_ranking
 FROM USER_DATA
 ORDER BY DATA_INSERCAO DESC
 FETCH FIRST 1 ROWS ONLY
@@ -24,9 +24,11 @@ async function buscarTempoMaisRecente() {
 
     // Execução do SQL
     const result = await connection.execute(sql);
+    console.log('Result:', result);
     if (result.rows.length > 0) {
-      const [id, nome, idade, telefone, profissao, dataInsercao, pontuacao] = result.rows[0];
-      return { success: true, id, nome, idade, telefone, profissao, dataInsercao, pontuacao };
+      const [id, nome, idade, telefone, profissao, dataInsercao, pontuacao, pontuacao_ranking] = result.rows[0];
+      console.log('Registro mais recente:', id, nome, idade, telefone, profissao, dataInsercao, pontuacao, pontuacao_ranking);
+      return { success: true, id, nome, idade, telefone, profissao, dataInsercao, pontuacao, pontuacao_ranking };
     } else {
       return { success: false, message: 'Nenhum registro encontrado' };
     }
@@ -58,7 +60,8 @@ export default async function handler(req, res) {
       telefone: result.telefone,
       profissao: result.profissao,
       dataInsercao: result.dataInsercao,
-      pontuacao: result.pontuacao
+      pontuacao: result.pontuacao,
+      pontuacao_ranking: result.pontuacao_ranking
     });
   } else {
     res.status(500).json({ message: 'Falha ao buscar o registro mais recente', error: result.error || result.message });
