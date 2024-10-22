@@ -1,7 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
 import Styled from "styled-components";
-import Typical from "react-typical";
 
 const ContainerDeAvaliacao = Styled.div`
   border-radius: 24px;
@@ -67,7 +66,7 @@ export default function TopJogadores() {
   return (
     <div className="container pt-3" style={{ background: "#F3F4F8" }}>
       <h1 className="text-center">
-        <Typical steps={["Top 3 Jogadores", 1000]} loop={1} wrapper="span" />
+        Top 3 Jogadores
       </h1>
 
       <div className="table-responsive mt-4">
