@@ -112,7 +112,7 @@ export default function TopJogadores() {
         {showInviteMessage && (
           <div className="alert alert-info text-center" role="alert">
             Telefone não encontrado. <br /> Venha participar de nossa
-            experiência para deixar uma avaliação.
+            experiência para competir.
           </div>
         )}
         <button type="submit" className="btn btn-primary w-100">

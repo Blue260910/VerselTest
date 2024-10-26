@@ -3,7 +3,5 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/api/pontuacaoRecente": "pages/api/pontuacaoRecente.js",
-  "/": "pages/index.js",
-  "/feedbackDash": "pages/feedbackDash.js",
-  "/api/feedbacks": "pages/api/feedbacks.js"
+  "/": "pages/index.js"
 }

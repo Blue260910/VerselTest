@@ -8,6 +8,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Offcanvas from "react-bootstrap/Offcanvas";
+import { Modal } from "react-bootstrap";
 
 function OffcanvasExample() {
   return (
@@ -46,7 +47,9 @@ function OffcanvasExample() {
                   <Nav.Link href="#">Home</Nav.Link>
                   <Nav.Link href="/atualizarDados">Atualizar dados</Nav.Link>
                   <Nav.Link href="/avaliacao">Avaliacao de usuarios</Nav.Link>
-                  <Nav.Link href="/consultarPosicao">Consultar Posição</Nav.Link>
+                  <Nav.Link href="/consultarPosicao">
+                    Consultar Posição
+                  </Nav.Link>
                   <Nav.Link href="/feedbackDash">Feadbacks</Nav.Link>
                 </Nav>
               </Offcanvas.Body>
@@ -69,6 +72,7 @@ export default function Home() {
   const [submittedData, setSubmittedData] = useState([]);
   const [recentData, setRecentData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,6 +80,27 @@ export default function Home() {
       ...formData,
       [name]: value,
     });
+  };
+
+  const handleLimparNomesNulos = async () => {
+    try {
+      const response = await fetch("/api/limparDados");
+      const data = await response.json();
+      alert(data.message);
+    } catch (error) {
+      console.error("Error clearing null names:", error);
+    }
+  };
+
+  const handleLimparTudo = async () => {
+    try {
+      const response = await fetch("/api/limparDados?limpar=true");
+      const data = await response.json();
+      alert(data.message);
+    } catch (error) {
+      console.error("Error clearing all data:", error);
+    }
+    setShowModal(false);
   };
 
   const handleSubmit = async (e) => {
@@ -143,10 +168,7 @@ export default function Home() {
   }, []);
 
   {
-    loading && (
-      <div className="container mt-5 text-center">
-      </div>
-    );
+    loading && <div className="container mt-5 text-center"></div>;
   }
 
   return (
@@ -226,7 +248,6 @@ export default function Home() {
                     <th>Data de Inserção</th>
                     <th>Tempo</th>
                     <th>Pontuacao</th>
-
                   </tr>
                 </thead>
                 <tbody>
@@ -280,6 +301,33 @@ export default function Home() {
             <h2 className="text-center">Nenhum dado recente encontrado.</h2>
           </div>
         )}
+        <div className="mt-5 text-center mb-5">
+          <button
+            className="btn btn-warning mr-2 w-100 mt-5"
+            onClick={handleLimparNomesNulos}
+          >
+            Limpar Nomes Nulos
+          </button>
+          <button className="btn btn-danger w-100 mt-5 mb-5" onClick={() => setShowModal(true)}>
+            DELETAR TODA A BASE DE DADOS
+          </button>
+        </div>
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirmar Limpeza</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Tem certeza de que deseja deletar todos os dados?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Cancelar
+            </Button>
+            <Button variant="danger" onClick={handleLimparTudo}>
+              Confirmar
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );
